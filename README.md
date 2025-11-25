@@ -27,7 +27,7 @@ python3 -m pip install -r ./requirements/prod.txt
 
 To run in other modes, use dev.txt and test.txt
 
-### Установка на Windows
+### From Windows
 
 At this point, you can install dependencies for prod, test, and dev modes.
 Example for prod mode:
@@ -46,7 +46,7 @@ python -m pip install -r ./requirements/prod.txt
 
 To run in other modes, use dev.txt and test.txt
 
-## Запуск
+## Launching
 
 Go to the project directory:
 
@@ -74,6 +74,6 @@ python3 manage.py runserver
 
 The test server is hosted at the link [http://127.0.0.1:8000/](http://127.0.0.1:8000/).
 
-## Настройка
+## Settings
 
 Settings are made through the NoobRPG/.env file.
