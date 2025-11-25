@@ -1,0 +1,4 @@
+[flake8]
+import-order-style = google
+exclude = .git,__pycache__,migrations,.venv
+max-line-length = 79
