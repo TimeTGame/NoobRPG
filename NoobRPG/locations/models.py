@@ -14,3 +14,6 @@ class Location(models.Model):
         max_length=150,
         help_text='Enter location slug',
     )
+
+    def __str__(self):
+        return f'{self.name}'

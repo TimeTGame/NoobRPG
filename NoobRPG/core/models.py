@@ -56,4 +56,4 @@ class EntityBaseModel(models.Model):
         verbose_name_plural = 'base entitites'
 
     def __str__(self):
-        return self.id
+        return f'{self.name}'
