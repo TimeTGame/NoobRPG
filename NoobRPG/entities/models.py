@@ -9,7 +9,24 @@ from locations.models import Location
 from sellers_offers.models import SellerOffer
 
 
+class SellerManager(models.Manager):
+    def all_fields(self) -> models.QuerySet:
+        queryset = (
+            self.get_queryset()
+            .prefetch_related(
+                Seller.offers.field.name,
+            )
+        )
+        return (
+            queryset
+            .order_by(
+                Seller.name.field.name,
+            )
+        )
+
+
 class Seller(models.Model):
+    objects = SellerManager()
     name = models.CharField(
         'Entity name',
         max_length=100,
@@ -29,7 +46,27 @@ class Seller(models.Model):
         return f'{self.name}'
 
 
+class NPCManager(models.Manager):
+    def all_fields(self) -> models.QuerySet:
+        queryset = (
+            self.get_queryset()
+            .select_related(
+                NonPlayerCharacter.current_location.field.name,
+            )
+            .prefetch_related(
+                NonPlayerCharacter.items_to_drop.field.name,
+            )
+        )
+        return (
+            queryset
+            .order_by(
+                NonPlayerCharacter.name.field.name,
+            )
+        )
+
+
 class NonPlayerCharacter(EntityBaseModel):
+    objects = NPCManager()
     items_to_drop = models.ManyToManyField(
         Items,
         blank=True,
@@ -38,15 +75,15 @@ class NonPlayerCharacter(EntityBaseModel):
 
     class Meta:
         verbose_name = 'npc'
-        verbose_name_plural = 'npc'
+        verbose_name_plural = 'npcs'
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f'{self.name}'
 
-    def drop_items(self):
+    def drop_items(self) -> models.QuerySet:
         return random.choice(self.items_to_drop)
 
-    def taking_damage(self, damage):
+    def taking_damage(self, damage: int) -> str | None:
         if self.hp > damage:
             self.hp -= damage
         else:
@@ -54,11 +91,33 @@ class NonPlayerCharacter(EntityBaseModel):
             return self.drop_items()
         return None
 
-    def dealing_damage(self):
-        return self.damage
+    def dealing_damage(self) -> int:
+        return self.base_damage
+
+
+class PlayerManager(models.Manager):
+    def all_fields(self) -> models.QuerySet:
+        queryset = (
+            self.get_queryset()
+            .select_related(
+                Player.current_location.field.name,
+                Player.start_location.field.name,
+                Player.weapon.field.name,
+            )
+            .prefetch_related(
+                Player.inventory.field.name,
+            )
+        )
+        return (
+            queryset
+            .order_by(
+                Player.name.field.name,
+            )
+        )
 
 
 class Player(EntityBaseModel):
+    objects = PlayerManager()
     inventory = models.ManyToManyField(
         Items,
         blank=True,
@@ -79,11 +138,18 @@ class Player(EntityBaseModel):
         verbose_name='start location',
     )
 
-    def to_start_location(self):
+    class Meta:
+        verbose_name = 'player'
+        verbose_name_plural = 'players'
+
+    def __str__(self):
+        return f'{self.name}'
+
+    def to_start_location(self) -> None:
         self.location = self.start_location
         self.save()
 
-    def equip_weapon(self, item):
+    def equip_weapon(self, item: models.QuerySet) -> None:
         if item is None:
             self.weapon = None
             return
@@ -92,7 +158,7 @@ class Player(EntityBaseModel):
         self.weapon = item
         self.save()
 
-    def taking_damage(self, damage_hp, damage_mana):
+    def taking_damage(self, damage_hp: int, damage_mana: int) -> str:
         if self.hp >= damage_hp or self.mana >= damage_mana:
             self.hp -= damage_hp
             self.mana -= damage_mana
@@ -110,7 +176,7 @@ class Player(EntityBaseModel):
         self.save()
         return message
 
-    def healing(self, hp_heal_amount, mana_heal_amount):
+    def healing(self, hp_heal_amount: int, mana_heal_amount: int) -> str:
         healed_hp = self.hp + hp_heal_amount
         healed_mana = self.mana + mana_heal_amount
         if healed_hp > self.max_hp:
@@ -131,7 +197,7 @@ class Player(EntityBaseModel):
             f'Your health is now {self.hp} and your mana is {self.mana}.'
         )
 
-    def dealing_damage(self):
+    def dealing_damage(self) -> int:
         if self.weapon:
             return self.base_damage + self.weapon.damage
         return self.base_damage

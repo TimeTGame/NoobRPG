@@ -9,6 +9,7 @@ class SellersAdmin(admin.ModelAdmin):
     list_display = (
         Seller.name.field.name,
     )
+    filter_horizontal = (Seller.offers.field.name,)
     list_display_links = (Seller.name.field.name,)
     short_description = 'Seller'
 
@@ -20,6 +21,7 @@ class NPCsAdmin(admin.ModelAdmin):
         Player.current_location.field.name,
         Player.is_in_battle.field.name,
     )
+    filter_horizontal = (NonPlayerCharacter.items_to_drop.field.name,)
     list_display_links = (NonPlayerCharacter.name.field.name,)
     short_description = 'NPC'
 
@@ -31,5 +33,6 @@ class PlayersAdmin(admin.ModelAdmin):
         Player.current_location.field.name,
         Player.is_in_battle.field.name,
     )
+    filter_horizontal = (Player.inventory.field.name,)
     list_display_links = (Player.name.field.name,)
     short_description = 'Player'
