@@ -1,4 +1,4 @@
-__all__ = ('get_filterable_fields')
+__all__ = ['get_filterable_fields']
 
 
 def get_filterable_fields(model, depth=1, prefix=''):

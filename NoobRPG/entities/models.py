@@ -11,17 +11,11 @@ from sellers_offers.models import SellerOffer
 
 class SellerManager(models.Manager):
     def all_fields(self) -> models.QuerySet:
-        queryset = (
-            self.get_queryset()
-            .prefetch_related(
-                Seller.offers.field.name,
-            )
+        queryset = self.get_queryset().prefetch_related(
+            Seller.offers.field.name,
         )
-        return (
-            queryset
-            .order_by(
-                Seller.name.field.name,
-            )
+        return queryset.order_by(
+            Seller.name.field.name,
         )
 
 
@@ -57,11 +51,8 @@ class NPCManager(models.Manager):
                 NonPlayerCharacter.items_to_drop.field.name,
             )
         )
-        return (
-            queryset
-            .order_by(
-                NonPlayerCharacter.name.field.name,
-            )
+        return queryset.order_by(
+            NonPlayerCharacter.name.field.name,
         )
 
 
@@ -108,11 +99,8 @@ class PlayerManager(models.Manager):
                 Player.inventory.field.name,
             )
         )
-        return (
-            queryset
-            .order_by(
-                Player.name.field.name,
-            )
+        return queryset.order_by(
+            Player.name.field.name,
         )
 
 
@@ -193,9 +181,7 @@ class Player(EntityBaseModel):
                 EntityBaseModel.mana.field.value,
             ],
         )
-        return (
-            f'Your health is now {self.hp} and your mana is {self.mana}.'
-        )
+        return f'Your health is now {self.hp} and your mana is {self.mana}.'
 
     def dealing_damage(self) -> int:
         if self.weapon:

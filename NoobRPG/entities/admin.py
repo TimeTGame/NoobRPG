@@ -6,9 +6,7 @@ from entities.models import NonPlayerCharacter, Player, Seller
 
 @admin.register(Seller)
 class SellersAdmin(admin.ModelAdmin):
-    list_display = (
-        Seller.name.field.name,
-    )
+    list_display = (Seller.name.field.name,)
     filter_horizontal = (Seller.offers.field.name,)
     list_display_links = (Seller.name.field.name,)
     short_description = 'Seller'
