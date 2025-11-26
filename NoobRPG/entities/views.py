@@ -1,5 +1,7 @@
 __all__ = []
 
+from core.functions import get_filterable_fields
+from django.core.exceptions import FieldError
 from entities.models import NonPlayerCharacter as NPCModel
 from entities.models import Player, Seller
 from entities.serializers import (
@@ -11,29 +13,57 @@ from rest_framework import permissions, viewsets
 
 
 class SellerViewSet(viewsets.ModelViewSet):
-    queryset = Seller.objects.all()
+    queryset = Seller.objects.all_fields()
     serializer_class = SellerSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+    def get_queryset(self):
+        queryset = Seller.objects.all_fields()
+        allowed_params = get_filterable_fields(Seller, depth=1)
+
+        for param, value in self.request.query_params.items():
+            if param in allowed_params:
+                try:
+                    queryset = queryset.filter(**{param: value})
+                except (TypeError, ValueError, FieldError):
+                    continue
+
+        return queryset
+
 
 class NPCsViewSet(viewsets.ModelViewSet):
-    queryset = NPCModel.objects.all()
-    serializer_class = NPCSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-
-class NPCsInLocationViewSet(viewsets.ModelViewSet):
+    queryset = NPCModel.objects.all_fields()
     serializer_class = NPCSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        location_slug = self.kwargs.get('location_slug')
-        if location_slug:
-            return NPCModel.objects.in_location(location_slug)
-        return NPCModel.objects.none()
+        queryset = NPCModel.objects.all_fields()
+        allowed_params = get_filterable_fields(NPCModel, depth=1)
+
+        for param, value in self.request.query_params.items():
+            if param in allowed_params:
+                try:
+                    queryset = queryset.filter(**{param: value})
+                except (TypeError, ValueError, FieldError):
+                    continue
+
+        return queryset
 
 
 class PlayerViewSet(viewsets.ModelViewSet):
-    queryset = Player.objects.all()
+    queryset = Player.objects.all_fields()
     serializer_class = PlayerSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        queryset = Player.objects.all_fields()
+        allowed_params = get_filterable_fields(Player, depth=1)
+
+        for param, value in self.request.query_params.items():
+            if param in allowed_params:
+                try:
+                    queryset = queryset.filter(**{param: value})
+                except (TypeError, ValueError, FieldError):
+                    continue
+
+        return queryset

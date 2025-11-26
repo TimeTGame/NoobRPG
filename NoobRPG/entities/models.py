@@ -9,7 +9,24 @@ from locations.models import Location
 from sellers_offers.models import SellerOffer
 
 
+class SellerManager(models.Manager):
+    def all_fields(self) -> models.QuerySet:
+        queryset = (
+            self.get_queryset()
+            .prefetch_related(
+                Seller.offers.field.name,
+            )
+        )
+        return (
+            queryset
+            .order_by(
+                Seller.name.field.name,
+            )
+        )
+
+
 class Seller(models.Model):
+    objects = SellerManager()
     name = models.CharField(
         'Entity name',
         max_length=100,
@@ -30,12 +47,9 @@ class Seller(models.Model):
 
 
 class NPCManager(models.Manager):
-    def in_location(self, location_slug: str) -> models.QuerySet:
+    def all_fields(self) -> models.QuerySet:
         queryset = (
             self.get_queryset()
-            .filter(
-                current_location__slug=location_slug,
-            )
             .select_related(
                 NonPlayerCharacter.current_location.field.name,
             )
@@ -81,7 +95,29 @@ class NonPlayerCharacter(EntityBaseModel):
         return self.base_damage
 
 
+class PlayerManager(models.Manager):
+    def all_fields(self) -> models.QuerySet:
+        queryset = (
+            self.get_queryset()
+            .select_related(
+                Player.current_location.field.name,
+                Player.start_location.field.name,
+                Player.weapon.field.name,
+            )
+            .prefetch_related(
+                Player.inventory.field.name,
+            )
+        )
+        return (
+            queryset
+            .order_by(
+                Player.name.field.name,
+            )
+        )
+
+
 class Player(EntityBaseModel):
+    objects = PlayerManager()
     inventory = models.ManyToManyField(
         Items,
         blank=True,
