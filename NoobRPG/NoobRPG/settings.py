@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'locations.apps.LocationsConfig',
     'rarity.apps.RarityConfig',
     'sellers_offers.apps.SellersOffersConfig',
+    'game.apps.GameConfig',
 ]
 
 MIDDLEWARE = [

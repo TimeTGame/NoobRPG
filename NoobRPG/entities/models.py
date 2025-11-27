@@ -85,11 +85,26 @@ class NonPlayerCharacter(EntityBaseModel):
             self.hp = 0
         self.save()
         if self.hp == 0:
-            return self.drop_items()
+            self.is_in_battle = False
+            self.save()
+            return f'{self.drop_items()}'
         return None
 
     def self_damage(self) -> int:
         return self.base_damage
+
+    def attack(self, player: models.QuerySet) -> str:
+        damage = self.self_damage()
+        player_return = player.taking_damage(damage, 0)
+        if player_return is None:
+            self.is_in_battle = False
+            self.save()
+            return (
+                'Enemy attacked. You have lost. '
+                f'You have been sent to the {player.start_location} location.'
+            )
+
+        return player_return
 
 
 class PlayerManager(models.Manager):
@@ -163,17 +178,19 @@ class Player(EntityBaseModel):
         return f'Equipped weapon: {self.weapon}.'
 
     def taking_damage(self, damage_hp: int, damage_mana: int) -> str:
-        if self.hp >= damage_hp or self.mana >= damage_mana:
+        message = 'Enemy attacked. '
+        if self.hp >= damage_hp and self.mana >= damage_mana:
             self.hp -= damage_hp
             self.mana -= damage_mana
-            message = (
+            message += (
                 f'Your health is now {self.hp} and your mana is {self.mana}.'
             )
         else:
             self.hp = self.max_hp
             self.mana = self.max_mana
+            self.is_in_battle = False
             self.to_start_location()
-            message = (
+            message += (
                 'You have lost. '
                 f'You have been sent to the {self.start_location} location.'
             )
@@ -206,5 +223,10 @@ class Player(EntityBaseModel):
 
     def attack(self, enemy: models.QuerySet) -> str:
         damage = self.self_damage()
-        enemy.taking_damage(damage)
+        enemy_return = enemy.taking_damage(damage)
+        if enemy_return is not None:
+            self.is_in_battle = False
+            self.save()
+            return f'You won. Drop from target: {enemy_return}'
+
         return f'You dealt {damage} damage to an enemy.'
