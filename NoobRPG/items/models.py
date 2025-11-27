@@ -6,11 +6,8 @@ from rarity.models import Rarity
 
 class ItemManager(models.Manager):
     def all_fields(self) -> models.QuerySet:
-        queryset = (
-            self.get_queryset()
-            .select_related(
-                Items.rarity.field.name,
-            )
+        queryset = self.get_queryset().select_related(
+            Items.rarity.field.name,
         )
         return queryset.order_by(
             Items.id.field.name,

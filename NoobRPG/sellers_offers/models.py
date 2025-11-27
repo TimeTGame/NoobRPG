@@ -6,11 +6,8 @@ from items.models import Items
 
 class SellerOfferManager(models.Manager):
     def all_fields(self) -> models.QuerySet:
-        queryset = (
-            self.get_queryset()
-            .select_related(
-                SellerOffer.item.field.name,
-            )
+        queryset = self.get_queryset().select_related(
+            SellerOffer.item.field.name,
         )
         return queryset.order_by(
             SellerOffer.id.field.name,

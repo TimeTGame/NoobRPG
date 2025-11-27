@@ -7,5 +7,5 @@ router = routers.DefaultRouter()
 router.register(r'', views.ItemViewSet, basename='items')
 
 urlpatterns = [
-    path('', include(router.urls)),
+    path('items/', include(router.urls)),
 ]
