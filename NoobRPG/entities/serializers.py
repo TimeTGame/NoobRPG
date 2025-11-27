@@ -17,19 +17,6 @@ class SellerSerializer(serializers.HyperlinkedModelSerializer):
             Seller.offers.field.name,
         ]
 
-    def build_field(self, field_name, info, model_class, nested_depth):
-        field_class, field_kwargs = super().build_field(
-            field_name,
-            info,
-            model_class,
-            nested_depth,
-        )
-
-        if field_name == 'url':
-            field_kwargs['view_name'] = 'sellers-detail'
-
-        return field_class, field_kwargs
-
 
 class NPCSerializer(serializers.HyperlinkedModelSerializer):
     items_to_drop = serializers.StringRelatedField(many=True, read_only=True)
@@ -49,19 +36,6 @@ class NPCSerializer(serializers.HyperlinkedModelSerializer):
             NPCModel.current_location.field.name,
             NPCModel.items_to_drop.field.name,
         ]
-
-    def build_field(self, field_name, info, model_class, nested_depth):
-        field_class, field_kwargs = super().build_field(
-            field_name,
-            info,
-            model_class,
-            nested_depth,
-        )
-
-        if field_name == 'url':
-            field_kwargs['view_name'] = 'npcs-detail'
-
-        return field_class, field_kwargs
 
 
 class PlayerSerializer(serializers.HyperlinkedModelSerializer):
@@ -85,16 +59,3 @@ class PlayerSerializer(serializers.HyperlinkedModelSerializer):
             Player.weapon.field.name,
             Player.start_location.field.name,
         ]
-
-    def build_field(self, field_name, info, model_class, nested_depth):
-        field_class, field_kwargs = super().build_field(
-            field_name,
-            info,
-            model_class,
-            nested_depth,
-        )
-
-        if field_name == 'url':
-            field_kwargs['view_name'] = 'players-detail'
-
-        return field_class, field_kwargs

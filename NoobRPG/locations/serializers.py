@@ -8,6 +8,7 @@ class LocationSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Location
         fields = [
+            'url',
             Location.id.field.name,
             Location.name.field.name,
             Location.slug.field.name,
