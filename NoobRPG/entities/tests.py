@@ -30,7 +30,7 @@ class NPCLocationQueryTest(TestCase):
 
     def test_npc_list_without_query_param(self):
         view = NPCsViewSet.as_view({'get': 'list'})
-        request = self.factory.get('/entities/npcs/')
+        request = self.factory.get('/api/v1/entities/npcs/')
         force_authenticate(request, user=self.user)
         response = view(request)
 
@@ -40,7 +40,7 @@ class NPCLocationQueryTest(TestCase):
     def test_npc_list_with_location_query_param(self):
         view = NPCsViewSet.as_view({'get': 'list'})
         request = self.factory.get(
-            '/entities/npcs/?current_location__slug=forest',
+            '/api/v1/entities/npcs/?current_location__slug=forest',
         )
         force_authenticate(request, user=self.user)
         response = view(request)
@@ -52,7 +52,7 @@ class NPCLocationQueryTest(TestCase):
     def test_npc_list_with_nonexistent_location(self):
         view = NPCsViewSet.as_view({'get': 'list'})
         request = self.factory.get(
-            '/entities/npcs/?current_location__slug=nonexistent',
+            '/api/v1/entities/npcs/?current_location__slug=nonexistent',
         )
         force_authenticate(request, user=self.user)
         response = view(request)

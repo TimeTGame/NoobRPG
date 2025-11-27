@@ -1,17 +1,17 @@
 __all__ = ()
 
-from locations.models import Location
+from rarity.models import Rarity
 from rest_framework import serializers
 
 
-class LocationSerializer(serializers.HyperlinkedModelSerializer):
+class RaritySerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-        model = Location
+        model = Rarity
         fields = [
             'url',
-            Location.id.field.name,
-            Location.name.field.name,
-            Location.slug.field.name,
+            Rarity.id.field.name,
+            Rarity.name.field.name,
+            Rarity.slug.field.name,
         ]
 
     def build_field(self, field_name, info, model_class, nested_depth):
@@ -23,6 +23,6 @@ class LocationSerializer(serializers.HyperlinkedModelSerializer):
         )
 
         if field_name == 'url':
-            field_kwargs['view_name'] = 'locations-detail'
+            field_kwargs['view_name'] = 'rarity-detail'
 
         return field_class, field_kwargs

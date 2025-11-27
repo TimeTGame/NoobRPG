@@ -4,7 +4,18 @@ from django.db import models
 from items.models import Items
 
 
+class SellerOfferManager(models.Manager):
+    def all_fields(self) -> models.QuerySet:
+        queryset = self.get_queryset().select_related(
+            SellerOffer.item.field.name,
+        )
+        return queryset.order_by(
+            SellerOffer.id.field.name,
+        )
+
+
 class SellerOffer(models.Model):
+    objects = SellerOfferManager()
     item = models.ForeignKey(
         Items,
         on_delete=models.CASCADE,

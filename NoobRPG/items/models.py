@@ -4,7 +4,18 @@ from django.db import models
 from rarity.models import Rarity
 
 
+class ItemManager(models.Manager):
+    def all_fields(self) -> models.QuerySet:
+        queryset = self.get_queryset().select_related(
+            Items.rarity.field.name,
+        )
+        return queryset.order_by(
+            Items.id.field.name,
+        )
+
+
 class Items(models.Model):
+    objects = ItemManager()
     name = models.CharField(
         'item name',
         max_length=100,

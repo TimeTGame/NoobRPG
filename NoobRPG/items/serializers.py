@@ -1,17 +1,19 @@
 __all__ = ()
 
-from locations.models import Location
+from items.models import Items
 from rest_framework import serializers
 
 
-class LocationSerializer(serializers.HyperlinkedModelSerializer):
+class ItemSerializer(serializers.HyperlinkedModelSerializer):
+
     class Meta:
-        model = Location
+        model = Items
         fields = [
             'url',
-            Location.id.field.name,
-            Location.name.field.name,
-            Location.slug.field.name,
+            Items.id.field.name,
+            Items.name.field.name,
+            Items.rarity.field.name,
+            Items.damage.field.name,
         ]
 
     def build_field(self, field_name, info, model_class, nested_depth):
@@ -23,6 +25,6 @@ class LocationSerializer(serializers.HyperlinkedModelSerializer):
         )
 
         if field_name == 'url':
-            field_kwargs['view_name'] = 'locations-detail'
+            field_kwargs['view_name'] = 'items-detail'
 
         return field_class, field_kwargs
