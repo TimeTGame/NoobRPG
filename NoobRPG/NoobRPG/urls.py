@@ -8,6 +8,7 @@ urlpatterns = [
     path('api/v1/auth/', include('djoser.urls')),
     re_path(r'^auth/', include('djoser.urls.authtoken')),
     path('api/v1/entities/', include('entities.urls')),
+    path('api/v1/game/', include('game.urls')),
     path('api/v1/items/', include('items.urls')),
     path('api/v1/locations/', include('locations.urls')),
     path('api/v1/rarity/', include('rarity.urls')),
