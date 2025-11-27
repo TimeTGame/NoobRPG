@@ -65,6 +65,7 @@ class NPCSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class PlayerSerializer(serializers.HyperlinkedModelSerializer):
+    user = serializers.StringRelatedField()
     inventory = serializers.StringRelatedField(many=True, read_only=True)
     weapon = serializers.StringRelatedField(read_only=True)
 
@@ -81,6 +82,7 @@ class PlayerSerializer(serializers.HyperlinkedModelSerializer):
             Player.base_damage.field.name,
             Player.is_in_battle.field.name,
             Player.current_location.field.name,
+            Player.user.field.name,
             Player.inventory.field.name,
             Player.weapon.field.name,
             Player.start_location.field.name,
