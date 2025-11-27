@@ -3,6 +3,7 @@ __all__ = ()
 import random
 
 from core.models import EntityBaseModel
+from django.contrib.auth.models import User
 from django.db import models
 from items.models import Items
 from locations.models import Location
@@ -72,17 +73,22 @@ class NonPlayerCharacter(EntityBaseModel):
         return f'{self.name}'
 
     def drop_items(self) -> models.QuerySet:
-        return random.choice(self.items_to_drop)
+        items = list(self.items_to_drop.all())
+        if items:
+            return random.choice(items)
+        return None
 
     def taking_damage(self, damage: int) -> str | None:
         if self.hp > damage:
             self.hp -= damage
         else:
             self.hp = 0
+        self.save()
+        if self.hp == 0:
             return self.drop_items()
         return None
 
-    def dealing_damage(self) -> int:
+    def self_damage(self) -> int:
         return self.base_damage
 
 
@@ -106,6 +112,14 @@ class PlayerManager(models.Manager):
 
 class Player(EntityBaseModel):
     objects = PlayerManager()
+    user = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name='player_profile',
+        help_text='The user account associated with this player',
+    )
     inventory = models.ManyToManyField(
         Items,
         blank=True,
@@ -133,18 +147,20 @@ class Player(EntityBaseModel):
     def __str__(self):
         return f'{self.name}'
 
-    def to_start_location(self) -> None:
-        self.location = self.start_location
+    def to_start_location(self) -> str:
+        self.current_location = self.start_location
         self.save()
+        return f'You are now in start location: {self.current_location}'
 
-    def equip_weapon(self, item: models.QuerySet) -> None:
+    def equip_weapon(self, item: models.QuerySet) -> str:
         if item is None:
             self.weapon = None
-            return
+            return 'Cannot equip weapon: Inventory is empty.'
         if item not in self.inventory.all():
-            raise ValueError('Cannot equip weapon: item not in inventory.')
+            return 'Cannot equip weapon: Item not in inventory.'
         self.weapon = item
         self.save()
+        return f'Equipped weapon: {self.weapon}.'
 
     def taking_damage(self, damage_hp: int, damage_mana: int) -> str:
         if self.hp >= damage_hp or self.mana >= damage_mana:
@@ -183,7 +199,12 @@ class Player(EntityBaseModel):
         )
         return f'Your health is now {self.hp} and your mana is {self.mana}.'
 
-    def dealing_damage(self) -> int:
+    def self_damage(self) -> int:
         if self.weapon:
             return self.base_damage + self.weapon.damage
         return self.base_damage
+
+    def attack(self, enemy: models.QuerySet) -> str:
+        damage = self.self_damage()
+        enemy.taking_damage(damage)
+        return f'You dealt {damage} damage to an enemy.'

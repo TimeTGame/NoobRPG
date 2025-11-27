@@ -23,6 +23,6 @@ class LocationSerializer(serializers.HyperlinkedModelSerializer):
         )
 
         if field_name == 'url':
-            field_kwargs['view_name'] = 'locations-detail'
+            field_kwargs['view_name'] = 'location-detail'
 
         return field_class, field_kwargs

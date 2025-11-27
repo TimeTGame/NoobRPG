@@ -2,3 +2,4 @@
 import-order-style = google
 exclude = .git,__pycache__,migrations,.dev-venv,.prod-venv,.venv
 max-line-length = 79
+ignore = FNE003,FNE008
